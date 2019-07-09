@@ -7,7 +7,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 class NewVisitorTest(unittest.TestCase):
-    ''' тест нового посетителя '''
+    """ тест нового посетителя """
 
     def setUp(self):
         """установка"""
@@ -40,20 +40,32 @@ class NewVisitorTest(unittest.TestCase):
         )
 
         # Она набирает в текстовом поле "Купить павлиньи перья" (ее хобби –
-        input_box.set_keys(Keys.ENTER)
-        time.sleep(1)
+        input_box.send_keys('1: Купить павлиньи перья')
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(5)
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
 
-        # Когда она нажимает enter, страница обновляется, и теперь страница
-        # содержит "1: Купить павлиньи перья" в качестве элемента списка
+        self.assertTrue(
+            any(row.text == '1: Купить павлиньи перья' for row in rows),
+            f"новый элемент списка не появился в таблице, содержимое было: {table.text}"
+        )
+
         # Текстовое поле по-прежнему приглашает ее добавить еще один элемент.
         # Она вводит "Сделать мушку из павлиньих перьев"
         # (Эдит очень методична)
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('2: Сделать мушку из павлиньих перьев')
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(5)
+
+        # Когда она нажимает enter, страница обновляется, и теперь страница
+        # содержит "1: Купить павлиньи перья" в качестве элемента списка
 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1: Купить павлиньи перья' for row in rows)
-        )
+
+        self.assertIn('2: Сделать мушку из павлиньих перьев', [row.text for row in rows])
 
         self.fail('Закончить тест!')
 
