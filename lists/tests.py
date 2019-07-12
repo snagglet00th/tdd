@@ -21,7 +21,7 @@ class HomePageTest(TestCase):
         self.assertTemplateUsed(response, 'lists/home.html')
 
     def test_can_save_a_post_request(self):
-        response = self.client.post('/', data={'item_text': self.FIRST_LIST_ITEM})
+        self.client.post('/', data={'item_text': self.FIRST_LIST_ITEM})
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()  # or Item.objects.all()[0]
@@ -39,6 +39,15 @@ class HomePageTest(TestCase):
         count_old = Item.objects.count()
         self.client.get('/')
         self.assertEqual(Item.objects.count(), count_old)
+
+    def test_displays_all_list_items(self):
+        Item.objects.create(text='item1')
+        Item.objects.create(text='item2')
+
+        response = self.client.get('/')
+
+        self.assertIn('item1', response.content.decode())
+        self.assertIn('item1', response.content.decode())
 
 
 class ItemModelTest(TestCase):
