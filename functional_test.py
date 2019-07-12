@@ -17,6 +17,11 @@ class NewVisitorTest(unittest.TestCase):
         """демонтаж"""
         self.browser.quit()
 
+    def check_available_of_value_into_table_inputed_before(self, text_row):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(text_row, [row.text for row in rows])
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         """тест: можно начать список и получить его позже"""
         # Эдит слышала про крутое новое онлайн-приложение со списком
@@ -43,13 +48,6 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys('1: Купить павлиньи перья')
         input_box.send_keys(Keys.ENTER)
         time.sleep(5)
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-
-        self.assertTrue(
-            any(row.text == '1: Купить павлиньи перья' for row in rows),
-            f"новый элемент списка не появился в таблице, содержимое было: {table.text}"
-        )
 
         # Текстовое поле по-прежнему приглашает ее добавить еще один элемент.
         # Она вводит "Сделать мушку из павлиньих перьев"
@@ -61,11 +59,8 @@ class NewVisitorTest(unittest.TestCase):
 
         # Когда она нажимает enter, страница обновляется, и теперь страница
         # содержит "1: Купить павлиньи перья" в качестве элемента списка
-
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-
-        self.assertIn('2: Сделать мушку из павлиньих перьев', [row.text for row in rows])
+        self.check_available_of_value_into_table_inputed_before('1: Купить павлиньи перья')
+        self.check_available_of_value_into_table_inputed_before('2: Сделать мушку из павлиньих перьев')
 
         self.fail('Закончить тест!')
 
