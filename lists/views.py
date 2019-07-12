@@ -10,6 +10,7 @@ def home_page(request):
         Item.objects.create(text=new_item)
         return redirect('/')
 
-    return render(request, 'lists/home.html')
+    items = Item.objects.all()
+    return render(request, 'lists/home.html', {'items': items})
 
 # POST.get('key', val) - если запрос не POST['key']=val, то тогда вернуть GET
