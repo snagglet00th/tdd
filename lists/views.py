@@ -5,11 +5,13 @@ from lists.models import Item
 
 
 def home_page(request):
-    item = Item()
-    item.text = request.POST.get('item_text', '')
-    item.save()
+    if request.method == 'POST':
+        new_item = request.POST['item_text']
+        Item.objects.create(text=new_item)
+    else:
+        new_item = ''
+
     return render(request,
-                  'lists/home.html', {'new_item_text': item.text
-                                      })
+                  'lists/home.html', {'new_item_text': new_item})
 
 # POST.get('key', val) - если запрос не POST['key']=val, то тогда вернуть GET

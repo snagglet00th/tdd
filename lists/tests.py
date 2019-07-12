@@ -20,15 +20,23 @@ class HomePageTest(TestCase):
         # это медод Django TestCase, который сравнивает результат запроса с правым аргументом
         self.assertTemplateUsed(response, 'lists/home.html')
 
-    def test_can_save_a_post_request(self):
+    def test_can_save_a_post_request_and_redirect_302(self):
         response = self.client.post('/', data={'item_text': self.FIRST_LIST_ITEM})
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()  # or Item.objects.all()[0]
         self.assertEqual(new_item.text, self.FIRST_LIST_ITEM)
 
-        self.assertIn(self.FIRST_LIST_ITEM, response.content.decode())
-        self.assertTemplateUsed(response, 'lists/home.html')
+        # self.assertIn(self.FIRST_LIST_ITEM, response.content.decode())
+        # self.assertTemplateUsed(response, 'lists/home.html')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_save_item_when_request_is_post_but_is_NOT_get(self):
+        count_old = Item.objects.count()
+        self.client.get('/')
+        self.assertEqual(Item.objects.count(), count_old)
 
 
 class ItemModelTest(TestCase):
